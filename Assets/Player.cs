@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
     public float moveSpeed;
 
     private float rotateVelocity;
-    private float moveRotation;
+    private float targetRotation;
 
     InputManager input;
     CharacterController controller;
@@ -33,13 +33,14 @@ public class Player : MonoBehaviour
         Vector3 moveVector = new Vector3(input.moveVector.x, 0, input.moveVector.y).normalized;
         if (moveVector !=  Vector3.zero)
         {
-            moveRotation = Mathf.Atan2(moveVector.x, moveVector.z) * Mathf.Rad2Deg + cam.transform.eulerAngles.y;
+            targetRotation = Mathf.Atan2(moveVector.x, moveVector.z) * Mathf.Rad2Deg + cam.transform.eulerAngles.y;
 
-            float smoothRotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, moveRotation, ref rotateVelocity, rotationTime);
+            float smoothRotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref rotateVelocity, rotationTime);
 
             transform.rotation = Quaternion.Euler(0, smoothRotation, 0);
         }
-        Vector3 moveDirection = Quaternion.Euler(0, moveRotation, 0) * Vector3.forward;
+
+        Vector3 moveDirection = Quaternion.Euler(0, targetRotation, 0) * Vector3.forward;
 
         if (moveVector != Vector3.zero)
         {
