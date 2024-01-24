@@ -11,9 +11,20 @@ public class Player : MonoBehaviour
     public GameObject cameraTargetObj;
     public GameObject head;
 
+    public float gravity;
+    public float jumpTime;
+    public float fallTime;
+    public float jumpHeight;
+
+    public bool isGround = true;
+    public float groundedOffset;
+    public float sphereRadius;
+    public LayerMask layerMask;
+
     private float targetRotation;
     private float cameraTargetYaw = 0;
     private float cameraTargetPitch = 0;
+    private float verticalVelocity;
 
     InputManager input;
     CharacterController controller;
@@ -30,8 +41,9 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        GroundCheck();
+        JumpAndGravity();
         Move();
-        //jump
         Animation();
     }
 
@@ -42,6 +54,8 @@ public class Player : MonoBehaviour
 
     void Move()
     {
+        float _moveSpeed = input.moveVector != Vector2.zero ? moveSpeed : 0;
+
         Vector3 moveVector = new Vector3(input.moveVector.x, 0, input.moveVector.y).normalized;
 
         if (input.moveVector !=  Vector2.zero)
@@ -51,10 +65,8 @@ public class Player : MonoBehaviour
 
         Vector3 moveDirection = Quaternion.Euler(0, targetRotation, 0) * Vector3.forward;
 
-        if (moveVector != Vector3.zero)
-        {
-            controller.Move(moveDirection.normalized * moveSpeed * Time.deltaTime);
-        }
+        controller.Move(moveDirection.normalized * _moveSpeed * Time.deltaTime +
+                            new Vector3(0, verticalVelocity, 0) * Time.deltaTime);
     }
 
     void CameraRotation()
@@ -72,6 +84,30 @@ public class Player : MonoBehaviour
         cameraTargetObj.transform.rotation = Quaternion.Euler(0, cameraTargetYaw, 0);
         cam.transform.rotation = Quaternion.Euler(cameraTargetPitch, cameraTargetYaw, 0);
         head.transform.rotation = Quaternion.Euler(headPitch, cameraTargetYaw, 0);
+    }
+
+    void GroundCheck()
+    {
+        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - groundedOffset, transform.position.z);
+        isGround = Physics.CheckSphere(spherePosition, sphereRadius, layerMask, QueryTriggerInteraction.Ignore);
+    }
+
+    void JumpAndGravity()
+    {
+        if(isGround)
+        {
+            if(verticalVelocity <= 0)
+            {
+                verticalVelocity = -2;
+            }
+
+            if(input.isJump)
+            {
+                verticalVelocity = Mathf.Sqrt(jumpHeight * -2 * gravity);
+            }
+        }
+
+        verticalVelocity += gravity * Time.deltaTime;
     }
 
     void Animation()

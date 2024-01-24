@@ -746,7 +746,7 @@ GameObject:
   - component: {fileID: 1658052510}
   m_Layer: 0
   m_Name: Map
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
@@ -886,6 +886,16 @@ MonoBehaviour:
   moveSpeed: 2
   cameraTargetObj: {fileID: 2030197581}
   head: {fileID: 985916962}
+  gravity: -9.7
+  jumpTime: 1
+  fallTime: 1
+  jumpHeight: 1.5
+  isGround: 1
+  groundedOffset: 0.01
+  sphereRadius: 0.25
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!114 &2030197586
 MonoBehaviour:
   m_ObjectHideFlags: 0
